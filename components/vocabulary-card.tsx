@@ -105,7 +105,7 @@ export function VocabularyCard({
   
   const handleAddToStudy = (word: VocabularyWord) => {
     if (onAddWord) {
-      onAddWord({...word, lastStudied: new Date().toISOString(), reviewCount: 0});
+      onAddWord({...word, lastStudied: new Date().toISOString()});
     }
   }
 

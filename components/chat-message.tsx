@@ -24,7 +24,7 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
       setIsPlaying(false)
     } else {
       speak(
-        message.isUser && message.translation ? message.translation : message.text,
+        message.type === 'user' && message.translation ? message.translation : message.content,
         () => setIsPlaying(false)
       )
       setIsPlaying(true)
@@ -35,10 +35,10 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex gap-3 ${message.isUser ? 'flex-row-reverse' : ''}`}
+      className={`flex gap-3 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}
     >
-      <Avatar className={`h-10 w-10 relative ${message.isUser ? 'bg-gradient-to-br from-blue-400 to-indigo-600 shadow-md' : 'bg-gradient-to-br from-green-400 to-teal-500 shadow-md'}`}>
-        {message.isUser ? (
+      <Avatar className={`h-10 w-10 relative ${message.type === 'user' ? 'bg-gradient-to-br from-blue-400 to-indigo-600 shadow-md' : 'bg-gradient-to-br from-green-400 to-teal-500 shadow-md'}`}>
+        {message.type === 'user' ? (
           <AvatarFallback className="bg-gradient-to-br from-blue-400 to-indigo-600">
             <User className="h-4 w-4 text-white" />
           </AvatarFallback>
@@ -49,10 +49,10 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
         )}
       </Avatar>
       <div className="space-y-2 max-w-[80%]">
-        <Card className={`p-4 shadow-lg ${message.isUser ? 'chat-bubble-user border-primary/20' : 'chat-bubble-bot'}`}>
+        <Card className={`p-4 shadow-lg ${message.type === 'user' ? 'chat-bubble-user border-primary/20' : 'chat-bubble-bot'}`}>
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm leading-relaxed">{message.text}</p>
-            {!message.isUser && (
+            <p className="text-sm leading-relaxed">{message.content}</p>
+            {message.type !== 'user' && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -70,7 +70,7 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
           {showTranslation && message.translation && (
             <div className="mt-2 border-t pt-2 flex items-start justify-between gap-2">
               <p className="text-sm text-muted-foreground">{message.translation}</p>
-              {message.isUser && (
+              {message.type === 'user' && (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -87,10 +87,10 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
             </div>
           )}
         </Card>
-        {message.grammarCorrections && message.grammarCorrections.length > 0 && (
+        {message.correction && message.correction.length > 0 && (
           <Card className="p-3 bg-muted/50 border border-primary/20">
             <p className="text-xs font-medium text-primary">Grammar Corrections:</p>
-            {message.grammarCorrections.map((correction, index) => (
+            {message.correction.map((correction, index) => (
               <div key={index} className="mt-2 text-xs">
                 <span className="text-destructive line-through">{correction.original}</span>
                 {' → '}

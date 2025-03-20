@@ -28,72 +28,62 @@ const DEFAULT_VOCABULARY: VocabularyWord[] = [
   {
     id: "1",
     word: "abandon",
-    definition: "見捨てる、放棄する",
-    example: "He had to abandon his car in the flood.",
-    level: "intermediate"
+    translation: "見捨てる、放棄する",
+    example: "He had to abandon his car in the flood."
   },
   {
     id: "2",
     word: "ability",
-    definition: "能力、才能",
-    example: "She has the ability to learn languages quickly.",
-    level: "beginner"
+    translation: "能力、才能",
+    example: "She has the ability to learn languages quickly."
   },
   {
     id: "3", 
     word: "above",
-    definition: "～の上に、以上の",
-    example: "The temperature is above average for this time of year.",
-    level: "beginner"
+    translation: "～の上に、以上の",
+    example: "The temperature is above average for this time of year."
   },
   {
     id: "4",
     word: "abroad",
-    definition: "海外に、外国で",
-    example: "She's currently studying abroad in France.",
-    level: "beginner"
+    translation: "海外に、外国で",
+    example: "She's currently studying abroad in France."
   },
   {
     id: "5",
     word: "absolute",
-    definition: "絶対的な、完全な",
-    example: "I have absolute confidence in her abilities.",
-    level: "intermediate"
+    translation: "絶対的な、完全な",
+    example: "I have absolute confidence in her abilities."
   },
   {
     id: "6",
     word: "academic",
-    definition: "学問の、大学の",
-    example: "His academic achievements were impressive.",
-    level: "intermediate"
+    translation: "学問の、大学の",
+    example: "His academic achievements were impressive."
   },
   {
     id: "7",
     word: "accept",
-    definition: "受け入れる、承諾する",
-    example: "She accepted their offer of employment.",
-    level: "beginner"
+    translation: "受け入れる、承諾する",
+    example: "She accepted their offer of employment."
   },
   {
     id: "8",
     word: "access",
-    definition: "アクセス、接近",
-    example: "You need a password to access the system.",
-    level: "intermediate"
+    translation: "アクセス、接近",
+    example: "You need a password to access the system."
   },
   {
     id: "9",
     word: "accident",
-    definition: "事故、偶然",
-    example: "He was involved in a car accident last week.",
-    level: "beginner"
+    translation: "事故、偶然",
+    example: "He was involved in a car accident last week."
   },
   {
     id: "10",
     word: "accommodate",
-    definition: "収容する、対応する",
-    example: "The hotel can accommodate up to 500 guests.",
-    level: "advanced"
+    translation: "収容する、対応する",
+    example: "The hotel can accommodate up to 500 guests."
   }
 ]
 
@@ -122,18 +112,10 @@ export function VocabularyStudy({ progress, onClose, onComplete }: VocabularyStu
     // ユーザーが知っている単語のIDのリスト
     const knownWordIds = (progress.knownVocabulary || []).map(word => word.id)
     
-    // ユーザーのレベルに合わせてデフォルト単語をフィルタリング
-    const userLevel = progress.level
-    const userLevelCategory = userLevel < 10 ? 'beginner' : userLevel < 20 ? 'intermediate' : 'advanced'
-    
+    // デフォルト単語からユーザーがすでに知っている単語を除外
     const filteredVocabulary = DEFAULT_VOCABULARY.filter(word => {
       // 知っている単語は除外
-      if (knownWordIds.includes(word.id)) return false
-      
-      // レベルに応じてフィルタリング
-      if (userLevelCategory === 'advanced') return true
-      if (userLevelCategory === 'intermediate') return word.level !== 'advanced'
-      return word.level === 'beginner'
+      return !knownWordIds.includes(word.id)
     })
     
     // ランダムに並べ替えて最大10件を返す
@@ -155,7 +137,9 @@ export function VocabularyStudy({ progress, onClose, onComplete }: VocabularyStu
   useEffect(() => {
     if (currentWord && !isFlipped) {
       const timer = setTimeout(() => {
-        speak(currentWord.word)
+        if (currentWord.word) {
+          speak(currentWord.word)
+        }
       }, 500)
       return () => clearTimeout(timer)
     }
@@ -169,11 +153,15 @@ export function VocabularyStudy({ progress, onClose, onComplete }: VocabularyStu
     if (!isFlipped) {
       stop()
       setTimeout(() => {
-        speak(currentWord.example)
+        if (currentWord && currentWord.example) {
+          speak(currentWord.example)
+        }
       }, 300)
     } else {
       stop()
-      speak(currentWord.word)
+      if (currentWord && currentWord.word) {
+        speak(currentWord.word)
+      }
     }
   }
   
@@ -317,7 +305,7 @@ export function VocabularyStudy({ progress, onClose, onComplete }: VocabularyStu
               isFlipped ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}>
               <div className="text-center space-y-4">
-                <h4 className="text-xl font-semibold">{currentWord?.definition}</h4>
+                <h4 className="text-xl font-semibold">{currentWord?.translation}</h4>
                 <p className="text-sm italic">&ldquo;{currentWord?.example}&rdquo;</p>
               </div>
               <Button 
@@ -326,7 +314,9 @@ export function VocabularyStudy({ progress, onClose, onComplete }: VocabularyStu
                 className="absolute bottom-4 right-4"
                 onClick={(e) => {
                   e.stopPropagation()
-                  speak(currentWord.example)
+                  if (currentWord && currentWord.example) {
+                    speak(currentWord.example)
+                  }
                 }}
               >
                 🔊

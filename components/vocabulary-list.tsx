@@ -65,18 +65,9 @@ export function VocabularyList({
     onRemoveFromKnown(word.id)
   }
   
-  // レベルに応じたバッジカラー
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'beginner':
-        return 'bg-blue-400'
-      case 'intermediate':
-        return 'bg-yellow-400'
-      case 'advanced':
-        return 'bg-red-400'
-      default:
-        return 'bg-slate-400'
-    }
+  // バッジカラー（固定値を返す）
+  const getLevelColor = () => {
+    return 'bg-blue-400'
   }
   
   return (
@@ -138,10 +129,10 @@ export function VocabularyList({
                           <Volume2 className="h-3 w-3" />
                         </Button>
                       </TableCell>
-                      <TableCell>{word.definition}</TableCell>
+                      <TableCell>{word.translation}</TableCell>
                       <TableCell>
-                        <Badge className={`${getLevelColor(word.level)} text-white`}>
-                          {word.level}
+                        <Badge className={`${getLevelColor()} text-white`}>
+                          初級
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -192,10 +183,10 @@ export function VocabularyList({
                           <Volume2 className="h-3 w-3" />
                         </Button>
                       </TableCell>
-                      <TableCell>{word.definition}</TableCell>
+                      <TableCell>{word.translation}</TableCell>
                       <TableCell>
-                        <Badge className={`${getLevelColor(word.level)} text-white`}>
-                          {word.level}
+                        <Badge className={`${getLevelColor()} text-white`}>
+                          初級
                         </Badge>
                       </TableCell>
                       <TableCell className="flex gap-1">

@@ -33,16 +33,16 @@ interface VocabularyWordFormProps {
 export function VocabularyWordForm({ onAddWord }: VocabularyWordFormProps) {
   const [open, setOpen] = useState(false)
   const [word, setWord] = useState('')
-  const [definition, setDefinition] = useState('')
+  const [translation, setTranslation] = useState('')
   const [example, setExample] = useState('')
-  const [level, setLevel] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner')
+  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner')
   const [isGenerating, setIsGenerating] = useState(false)
   
   const resetForm = () => {
     setWord('')
-    setDefinition('')
+    setTranslation('')
     setExample('')
-    setLevel('beginner')
+    setDifficulty('beginner')
   }
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,17 +53,17 @@ export function VocabularyWordForm({ onAddWord }: VocabularyWordFormProps) {
     }
     
     // 意味か例文が空の場合、AIで自動生成
-    let finalDefinition = definition.trim()
+    let finalTranslation = translation.trim()
     let finalExample = example.trim()
     
-    if (!finalDefinition || !finalExample) {
+    if (!finalTranslation || !finalExample) {
       try {
         setIsGenerating(true)
-        const generated = await generateWordDefinition(word, level)
+        const generated = await generateWordDefinition(word, difficulty)
         
-        if (!finalDefinition) {
-          finalDefinition = generated.definition
-          setDefinition(finalDefinition)
+        if (!finalTranslation) {
+          finalTranslation = generated.definition
+          setTranslation(finalTranslation)
         }
         
         if (!finalExample) {
@@ -80,11 +80,9 @@ export function VocabularyWordForm({ onAddWord }: VocabularyWordFormProps) {
     const newWord: VocabularyWord = {
       id: uuidv4(),
       word: word.trim(),
-      definition: finalDefinition || '（未入力）',
+      translation: finalTranslation || '（未入力）',
       example: finalExample || '',
-      level,
       lastStudied: new Date().toISOString(),
-      reviewCount: 0
     }
     
     onAddWord(newWord)
@@ -98,8 +96,8 @@ export function VocabularyWordForm({ onAddWord }: VocabularyWordFormProps) {
     
     try {
       setIsGenerating(true)
-      const generated = await generateWordDefinition(word, level)
-      setDefinition(generated.definition)
+      const generated = await generateWordDefinition(word, difficulty)
+      setTranslation(generated.definition)
       setExample(generated.example)
     } catch (error) {
       console.error('自動生成中にエラーが発生しました:', error)
@@ -166,14 +164,14 @@ export function VocabularyWordForm({ onAddWord }: VocabularyWordFormProps) {
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="definition" className="text-sm font-medium">
+            <label htmlFor="translation" className="text-sm font-medium">
               意味
               <span className="text-xs ml-2 text-muted-foreground">（空白の場合は自動生成されます）</span>
             </label>
             <Input
-              id="definition"
-              value={definition}
-              onChange={(e) => setDefinition(e.target.value)}
+              id="translation"
+              value={translation}
+              onChange={(e) => setTranslation(e.target.value)}
               placeholder="例: 語彙、単語"
             />
           </div>
@@ -193,12 +191,12 @@ export function VocabularyWordForm({ onAddWord }: VocabularyWordFormProps) {
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="level" className="text-sm font-medium">
+            <label htmlFor="difficulty" className="text-sm font-medium">
               難易度 <span className="text-destructive">*</span>
             </label>
             <Select
-              value={level}
-              onValueChange={(value: 'beginner' | 'intermediate' | 'advanced') => setLevel(value)}
+              value={difficulty}
+              onValueChange={(value: 'beginner' | 'intermediate' | 'advanced') => setDifficulty(value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="難易度を選択" />
