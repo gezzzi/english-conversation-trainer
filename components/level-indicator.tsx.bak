@@ -1,0 +1,49 @@
+"use client"
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Progress } from '@/types'
+import { Card } from '@/components/ui/card'
+import { Progress as ProgressBar } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
+import { Sparkles, Star, Trophy } from 'lucide-react'
+
+interface LevelIndicatorProps {
+  progress: Progress
+  className?: string
+}
+
+export function LevelIndicator({ progress, className = '' }: LevelIndicatorProps) {
+  const [showLevelUp, setShowLevelUp] = useState(false)
+  const [prevLevel, setPrevLevel] = useState(progress.level)
+
+  useEffect(() => {
+    // レベルが上がった時のアニメーションを表示
+    if (progress.level > prevLevel) {
+      setShowLevelUp(true)
+      const timer = setTimeout(() => setShowLevelUp(false), 3000)
+      return () => clearTimeout(timer)
+    }
+    setPrevLevel(progress.level)
+  }, [progress.level, prevLevel])
+
+  // レベル進捗率を計算
+  const levelProgress = (progress.experience % 100) / 100
+  const nextLevel = progress.level + 1
+  
+  // 難易度レベルに基づくラベル
+  const getLevelLabel = () => {
+    if (progress.level <= 5) return '英語？食べられるの？'
+    if (progress.level <= 10) return 'Hello と言った後、頭が真っ白'
+    if (progress.level <= 15) return '道を尋ねたら、答えが長すぎて絶望'
+    if (progress.level <= 20) return '外国人との会話、7割は頷くだけ'
+    if (progress.level <= 25) return '映画は字幕ありでほぼ理解'
+    if (progress.level <= 30) return '海外ドラマ、たまに字幕なしでも笑える'
+    if (progress.level <= 35) return '英語での電話、もう震えない'
+    if (progress.level <= 40) return '友達から通訳を頼まれがち'
+    if (progress.level <= 45) return '英語で冗談を言って笑いを取れる'
+    return '英語を話すとき、もう母国語を忘れる'
+  }
+
+  return (
+    <div className={`
