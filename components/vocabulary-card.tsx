@@ -114,7 +114,7 @@ export function VocabularyCard({
       <Card className={`p-4 border-primary/20 bg-card/50 backdrop-blur-sm ${className}`}>
         <div className="flex items-center gap-3 mb-4">
           <BookOpen className="h-6 w-6 text-primary" />
-          <h2 className="text-lg font-semibold">学習語彙数</h2>
+          <h2 className="text-lg font-semibold">単語学習</h2>
         </div>
         
         <div className="mb-4 text-center">

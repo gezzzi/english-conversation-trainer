@@ -6,9 +6,8 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Settings } from '@/types'
-import { Settings2, Info } from 'lucide-react'
+import { Settings2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface SettingsDialogProps {
   settings: Settings
@@ -37,23 +36,7 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="difficulty">返答の難易度</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div className="space-y-2 max-w-xs">
-                      <p><strong>初級:</strong> 基本的な日常会話と簡単な表現に焦点を当てます。</p>
-                      <p><strong>中級:</strong> より複雑な文法と表現、様々な状況での会話練習。</p>
-                      <p><strong>上級:</strong> 自然な会話の流れ、イディオム、ビジネス英語など。</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <Label htmlFor="difficulty">返答の難易度</Label>
             <Select
               value={localSettings.difficulty}
               onValueChange={(value: any) => handleChange('difficulty', value)}

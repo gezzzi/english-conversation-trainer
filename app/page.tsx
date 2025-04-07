@@ -157,6 +157,12 @@ export default function Home() {
         translateJapaneseToEnglish(content),
         generateConversationResponse(content, settings)
       ]);
+
+      // Update user message with translation
+      const updatedUserMessage = {
+        ...userMessage,
+        translation: translation
+      };
       
       const botMessage: Message = {
         id: uuidv4(),
@@ -166,7 +172,11 @@ export default function Home() {
         correction: response.corrections
       }
 
-      const updatedMessagesWithBot = [...updatedMessages, botMessage];
+      const updatedMessagesWithBot = [
+        ...messages,
+        updatedUserMessage,
+        botMessage
+      ];
       setMessages(updatedMessagesWithBot);
       
       if (autoSpeak && speechManager.current) {

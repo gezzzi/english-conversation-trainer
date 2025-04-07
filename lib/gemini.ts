@@ -141,7 +141,7 @@ export class ConversationManager {
   }
 
   async sendMessage(
-    japaneseText: string
+    userText: string
   ): Promise<{
     response: string;
     translation: string;
@@ -152,10 +152,13 @@ export class ConversationManager {
     }>;
   }> {
     try {
+      // 入力が英語かどうかを判定
+      const isEnglish = /^[A-Za-z\s\d.,!?'"()-]+$/.test(userText.trim());
+      
       // ユーザーメッセージを履歴に追加
       this.history.push({
         role: 'user',
-        content: japaneseText
+        content: userText
       });
 
       // 履歴から会話の文脈を構築
@@ -285,29 +288,25 @@ export async function generateConversationResponse(
 }
 
 // 日本語を英語に翻訳する関数
-export async function translateJapaneseToEnglish(japaneseText: string): Promise<string> {
+export async function translateJapaneseToEnglish(text: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.0-flash',
-      generationConfig: {
-        temperature: 0.1, // 翻訳は低い温度で
-        maxOutputTokens: 1024,
-      },
-    });
+    // 入力が英語かどうかを判定
+    const isEnglish = /^[A-Za-z\s\d.,!?'"()-]+$/.test(text.trim());
     
+    // 英語の場合は翻訳不要
+    if (isEnglish) {
+      return text;
+    }
+
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const result = await model.generateContent([
-      { text: `Translate the following Japanese text to natural, conversational English. 
-Return ONLY the English translation, with no additional comments or formatting.
-
-Japanese: ${japaneseText}
-
-English translation:` }
+      { text: 'Translate the following Japanese text to English. Only provide the translation without any explanation or additional text.' },
+      { text }
     ]);
     
-    const response = await result.response.text();
-    return response.trim();
+    return result.response.text().trim();
   } catch (error) {
     console.error('Translation error:', error);
-    return japaneseText; // エラーの場合はそのまま返す
+    return text; // エラーの場合は元のテキストを返す
   }
 } 
