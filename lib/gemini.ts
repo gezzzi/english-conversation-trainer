@@ -261,7 +261,10 @@ export function getConversationManager(settings?: Settings): ConversationManager
       settings = {
         difficulty: 'beginner',
         autoSpeak: true,
-        showTranslation: true
+        showTranslation: true,
+        botVoiceType: 'voice1',
+        userVoiceType: 'voice2',
+        speakingRate: 'normal'
       };
     }
     conversationManager = new ConversationManager(settings);

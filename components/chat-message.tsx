@@ -8,26 +8,29 @@ import { Button } from '@/components/ui/button'
 import { useSpeech } from '@/hooks/use-speech'
 import { Message } from '@/types'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
 interface ChatMessageProps {
   message: Message
   showTranslation: boolean
+  isPlaying?: boolean
 }
 
-export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
+export function ChatMessage({ message, showTranslation, isPlaying }: ChatMessageProps) {
   const { speak, stop } = useSpeech()
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlayingState, setIsPlayingState] = useState(isPlaying || false)
 
   const handleSpeak = () => {
-    if (isPlaying) {
+    if (isPlayingState) {
       stop()
-      setIsPlaying(false)
+      setIsPlayingState(false)
     } else {
       speak(
         message.type === 'user' && message.translation ? message.translation : message.content,
-        () => setIsPlaying(false)
+        message.type === 'user',
+        () => setIsPlayingState(false)
       )
-      setIsPlaying(true)
+      setIsPlayingState(true)
     }
   }
 
@@ -35,7 +38,11 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex gap-3 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}
+      className={cn(
+        "flex gap-3",
+        message.type === 'user' ? "flex-row-reverse" : "",
+        isPlayingState && "ring-2 ring-primary"
+      )}
     >
       <Avatar className={`h-10 w-10 relative ${message.type === 'user' ? 'bg-gradient-to-br from-blue-400 to-indigo-600 shadow-md' : 'bg-gradient-to-br from-green-400 to-teal-500 shadow-md'}`}>
         {message.type === 'user' ? (
@@ -48,7 +55,10 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
           </AvatarFallback>
         )}
       </Avatar>
-      <div className="space-y-2 max-w-[80%]">
+      <div className={cn(
+        "space-y-2 max-w-[80%]",
+        message.type === 'user' ? "bg-primary/10" : "bg-muted"
+      )}>
         <Card className={`p-4 shadow-lg ${message.type === 'user' ? 'chat-bubble-user border-primary/20' : 'chat-bubble-bot'}`}>
           <div className="flex items-start justify-between gap-2">
             <p className="text-sm leading-relaxed">{message.content}</p>
@@ -59,7 +69,7 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
                 className="h-6 w-6 shrink-0 hover:text-primary"
                 onClick={handleSpeak}
               >
-                {isPlaying ? (
+                {isPlayingState ? (
                   <VolumeX className="h-4 w-4" />
                 ) : (
                   <Volume2 className="h-4 w-4" />
@@ -77,7 +87,7 @@ export function ChatMessage({ message, showTranslation }: ChatMessageProps) {
                   className="h-6 w-6 shrink-0 hover:text-primary"
                   onClick={handleSpeak}
                 >
-                  {isPlaying ? (
+                  {isPlayingState ? (
                     <VolumeX className="h-4 w-4" />
                   ) : (
                     <Volume2 className="h-4 w-4" />

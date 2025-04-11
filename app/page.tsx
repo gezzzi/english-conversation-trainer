@@ -23,6 +23,9 @@ const DEFAULT_SETTINGS: Settings = {
   difficulty: 'beginner',
   autoSpeak: true,
   showTranslation: true,
+  botVoiceType: 'voice1',
+  userVoiceType: 'voice2',
+  speakingRate: 'normal'
 }
 
 const DEFAULT_PROGRESS: Progress = {
@@ -44,8 +47,9 @@ export default function Home() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
   const [progress, setProgress] = useState<Progress>(DEFAULT_PROGRESS)
   const [isLoading, setIsLoading] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [autoSpeak, setAutoSpeak] = useState<boolean>(true)
+  const [isPlaying, setIsPlaying] = useState(false)
   const speechManager = useRef<SpeechManager | null>(null)
 
   useEffect(() => {
@@ -219,6 +223,11 @@ export default function Home() {
   const handleSettingsChange = (newSettings: Settings) => {
     setSettings(newSettings)
     setAutoSpeak(newSettings.autoSpeak)
+    if (speechManager.current) {
+      speechManager.current.setBotVoiceType(newSettings.botVoiceType)
+      speechManager.current.setUserVoiceType(newSettings.userVoiceType)
+      speechManager.current.setSpeakingRate(newSettings.speakingRate)
+    }
     localStorage.setItem('settings', JSON.stringify(newSettings))
   }
 
@@ -321,12 +330,46 @@ export default function Home() {
     }
   }
 
+  const handlePlayConversation = () => {
+    if (messages.length <= 1) return;
+    setIsPlaying(true);
+  };
+
+  const handleStopConversation = () => {
+    setIsPlaying(false);
+    if (speechManager.current) {
+      speechManager.current.stop();
+    }
+  };
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    
+    const playMessages = async () => {
+      for (const message of messages) {
+        if (!isPlaying) return;
+        
+        await new Promise<void>((resolve) => {
+          if (speechManager.current) {
+            const textToSpeak = message.type === 'user' && message.translation ? message.translation : message.content;
+            speechManager.current.speak(textToSpeak, message.type === 'user', resolve);
+          } else {
+            resolve();
+          }
+        });
+      }
+      setIsPlaying(false);
+    };
+
+    playMessages();
+  }, [isPlaying, messages]);
+
   if (!isLoaded || !isSignedIn) {
     return null
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-[100dvh] bg-background flex">
       <Sidebar 
         isOpen={isSidebarOpen} 
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -337,24 +380,27 @@ export default function Home() {
         onUpdateProgress={handleUpdateProgress}
       />
       
-      <div className="flex-1 flex flex-col h-screen">
+      <div className="flex-1 flex flex-col h-[100dvh]">
         <Header 
           settings={settings} 
           onSettingsChange={handleSettingsChange}
-          isSidebarOpen={isSidebarOpen}
-          onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)}
           progress={progress}
+          messages={messages}
+          onPlayConversation={handlePlayConversation}
+          onStopConversation={handleStopConversation}
+          isPlaying={isPlaying}
         />
         
         <motion.main
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex-1 container mx-auto p-4 flex flex-col overflow-hidden"
+          className="flex-1 container mx-auto p-4 flex flex-col min-h-0"
         >
-          <Card className="flex-1 flex flex-col overflow-hidden">
+          <Card className="flex-1 flex flex-col min-h-0">
             <ChatContainer 
               messages={messages}
               showTranslation={settings.showTranslation}
+              currentPlayingIndex={-1}
             />
             <ChatInput 
               onSend={handleSendMessage} 

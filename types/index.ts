@@ -16,6 +16,9 @@ export type Settings = {
   difficulty: 'beginner' | 'intermediate' | 'advanced'
   autoSpeak: boolean
   showTranslation: boolean
+  botVoiceType: 'voice1' | 'voice2' | 'voice3' | 'voice4'
+  userVoiceType: 'voice1' | 'voice2' | 'voice3' | 'voice4'
+  speakingRate: 'slow' | 'normal' | 'fast'
 }
 
 export interface Progress {

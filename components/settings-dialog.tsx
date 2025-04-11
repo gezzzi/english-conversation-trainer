@@ -67,6 +67,56 @@ export function SettingsDialog({ settings, onSettingsChange }: SettingsDialogPro
               onCheckedChange={(checked) => handleChange('showTranslation', checked)}
             />
           </div>
+          <div className="space-y-2">
+            <Label>ボットの音声</Label>
+            <Select
+              value={localSettings.botVoiceType}
+              onValueChange={(value) => handleChange('botVoiceType', value as 'voice1' | 'voice2' | 'voice3' | 'voice4')}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="ボットの音声を選択" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="voice1">Voice 1</SelectItem>
+                <SelectItem value="voice2">Voice 2</SelectItem>
+                <SelectItem value="voice3">Voice 3</SelectItem>
+                <SelectItem value="voice4">Voice 4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>ユーザーの音声</Label>
+            <Select
+              value={localSettings.userVoiceType}
+              onValueChange={(value) => handleChange('userVoiceType', value as 'voice1' | 'voice2' | 'voice3' | 'voice4')}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="ユーザーの音声を選択" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="voice1">Voice 1</SelectItem>
+                <SelectItem value="voice2">Voice 2</SelectItem>
+                <SelectItem value="voice3">Voice 3</SelectItem>
+                <SelectItem value="voice4">Voice 4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>読み上げ速度</Label>
+            <Select
+              value={localSettings.speakingRate}
+              onValueChange={(value) => handleChange('speakingRate', value as 'slow' | 'normal' | 'fast')}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="読み上げ速度を選択" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="slow">ゆっくり</SelectItem>
+                <SelectItem value="normal">普通</SelectItem>
+                <SelectItem value="fast">速い</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
